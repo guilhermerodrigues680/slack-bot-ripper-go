@@ -48,31 +48,17 @@ func commandYesNo(command string, userName string) (SlackOutgoingResponse, error
 func executeCommand(command string, userName string) SlackOutgoingResponse {
 
 	if strings.HasPrefix(command, "?") && strings.HasSuffix(command, "?") {
-		resp, err := commandYesNo(command, userName)
-		_ = err
+		resp, _ := commandYesNo(command, userName)
 		return resp
 	}
 
 	switch strings.ToUpper(command) {
-	case "TA AI?":
-		fallthrough
-	case "TA VIVO?":
-		return SlackOutgoingResponse{
-			Text:     "Tô aqui de pé " + userName + ", haha!",
-			Username: "Golang BOT",
-		}
-	case "PARTIU":
-		fallthrough
-	case "BORA":
-		return SlackOutgoingResponse{
-			Text:     "Já tá na hora? Uhuuu, então partiu!",
-			Username: "Golang BOT",
-		}
+	case "TA AI?", "TA VIVO?":
+		return SlackOutgoingResponse{"Tô aqui de pé " + userName + ", haha!", "Golang BOT"}
+	case "PARTIU", "BORA":
+		return SlackOutgoingResponse{"Já tá na hora? Uhuuu, então partiu!", "Golang BOT"}
 	default:
-		return SlackOutgoingResponse{
-			Text:     "Poxa " + userName + ", não conheco o comando `" + command + "` :(",
-			Username: "Golang BOT",
-		}
+		return SlackOutgoingResponse{"Poxa " + userName + ", não conheco o comando `" + command + "` :(", "Golang BOT"}
 	}
 }
 
