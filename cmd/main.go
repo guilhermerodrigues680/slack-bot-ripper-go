@@ -26,7 +26,18 @@ func slackOutgoing(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
+// Version é transmitido pelo ldflags durante a compilacao
+var Version = "0.0.0-development"
+
+// Build é transmitido pelo ldflags durante a compilacao
+var Build = "0000000"
+
+// BuildTime é transmitido pelo ldflags durante a compilacao
+var BuildTime = "2009-11-10T23:00:00Z"
+
 func main() {
+	log.Printf("Version: %s\t(Build: %s)\tBuild Time: %s", Version, Build, BuildTime)
+
 	r := mux.NewRouter()
 
 	r.HandleFunc("/api/v1/slack/outgoing-webhook", slackOutgoing).Methods("POST")
