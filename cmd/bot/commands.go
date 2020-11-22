@@ -1,10 +1,18 @@
 package bot
 
 import (
+	"encoding/json"
 	"log"
+	"net/http"
 	"regexp"
 	"strings"
 )
+
+type yesNoReponse struct {
+	Answer string `json:answer`
+	Forced bool   `json:forced`
+	Image  string `json:image`
+}
 
 func getTextWithoutTriggerWord(text string, triggerWord string) string {
 	regexTriggerWord, _ := regexp.Compile(triggerWord + "\\s?")
@@ -18,7 +26,33 @@ func getFirstNameFromUserName(userName string) string {
 	return strings.Title(strings.ToLower(firstName))
 }
 
+func commandYesNo(command string, userName string) (SlackOutgoingResponse, error) {
+	resp, err := http.Get("https://yesno.wtf/api") // ?force=maybe
+	if err != nil {
+		log.Println("Erro ao buscar api")
+		return SlackOutgoingResponse{Text: "", Username: ""}, err
+	}
+
+	var result yesNoReponse
+	defer resp.Body.Close()
+
+	json.NewDecoder(resp.Body).Decode(&result)
+
+	if result.Answer == "yes" {
+		return SlackOutgoingResponse{command[1:] + "\nestou pensando... <" + result.Image + "|Sim!>", "Golang BOT"}, nil
+	}
+
+	return SlackOutgoingResponse{command[1:] + "\nestou pensando... <" + result.Image + "|Não!>", "Golang BOT"}, nil
+}
+
 func executeCommand(command string, userName string) SlackOutgoingResponse {
+
+	if strings.HasPrefix(command, "?") && strings.HasSuffix(command, "?") {
+		resp, err := commandYesNo(command, userName)
+		_ = err
+		return resp
+	}
+
 	switch strings.ToUpper(command) {
 	case "TA AI?":
 		fallthrough
