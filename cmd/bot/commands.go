@@ -13,13 +13,18 @@ func getTextWithoutTriggerWord(text string, triggerWord string) string {
 	return command
 }
 
+func getFirstNameFromUserName(userName string) string {
+	firstName := strings.Split(userName, ".")[0]
+	return strings.Title(strings.ToLower(firstName))
+}
+
 func executeCommand(command string, userName string) SlackOutgoingResponse {
 	switch strings.ToUpper(command) {
 	case "TA AI?":
 		fallthrough
 	case "TA VIVO?":
 		return SlackOutgoingResponse{
-			Text:     "To aqui de pé haha!",
+			Text:     "Tô aqui de pé " + userName + ", haha!",
 			Username: "Golang BOT",
 		}
 	case "PARTIU":
@@ -41,5 +46,6 @@ func executeCommand(command string, userName string) SlackOutgoingResponse {
 func RunCommand(outgoing SlackOutgoingMessage) SlackOutgoingResponse {
 	command := getTextWithoutTriggerWord(outgoing.Text, outgoing.TriggerWord)
 	log.Printf("Comando recebido: %s", command)
-	return executeCommand(command, outgoing.UserName)
+	firstName := getFirstNameFromUserName(outgoing.UserName)
+	return executeCommand(command, firstName)
 }
