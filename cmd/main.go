@@ -34,11 +34,14 @@ func meusTestes(w http.ResponseWriter, r *http.Request) {
 
 	switch q {
 	case "start":
-		stopwatch.Start()
+		stopwatchEl.Start()
 	case "pause":
-		stopwatch.Pause()
+		stopwatchEl.Pause()
 	case "reset":
-		stopwatch.Reset()
+		stopwatchEl.Reset()
+	case "status":
+		json.NewEncoder(w).Encode(stopwatchEl.Status())
+		return
 	}
 
 	fmt.Fprintf(w, "Comando: %s", q)
@@ -53,10 +56,12 @@ var Build = "0000000"
 // BuildTime é transmitido pelo ldflags durante a compilacao
 var BuildTime = "2009-11-10T23:00:00Z"
 
+var stopwatchEl = stopwatch.NewStopwatch()
+
 func main() {
 	log.Printf("Version: %s\t(Build: %s)\tBuild Time: %s", Version, Build, BuildTime)
 
-	go stopwatch.Cronometro() //  Go routine que vive junto com o processo
+	go stopwatchEl.Cronometro() // Go routine que vive junto com o processo
 
 	r := mux.NewRouter()
 
